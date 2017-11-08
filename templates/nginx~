@@ -1,0 +1,73 @@
+user root;  
+worker_processes 1;  
+   
+#error_log logs/error.log;  
+#error_log logs/error.log notice;  
+#error_log logs/error.log info;  
+   
+#pid    logs/nginx.pid;  
+   
+   
+events {  
+  worker_connections 1024;  
+}  
+   
+   
+http {  
+  include    mime.types;  
+  default_type application/octet-stream;  
+   
+  log_format main '$remote_addr - $remote_user [$time_local] "$request" ' 
+           '$status $body_bytes_sent "$http_referer" ' 
+           '"$http_user_agent" "$http_x_forwarded_for"';  
+   
+  access_log logs/access.log main;  
+   
+  sendfile    on;  
+  #tcp_nopush   on;  
+   
+  #keepalive_timeout 0;  
+  keepalive_timeout 65;  
+   
+  #gzip on;  
+   
+   
+  server {  
+    listen    5000;
+    server_name localhost;
+   
+    charset utf-8;  
+   
+    #access_log logs/host.access.log main;  
+   
+  location ~ .*\.(gif|jpg|jpeg|png)$ {  
+    expires 24h;  
+      root /home/images/;#Ö¸¶¨Í¼Æ¬´æ·ÅÂ·¾¶  
+      access_log /usr/local/websrv/nginx-1.9.4/logs/images.log;#ÈÕÖ¾´æ·ÅÂ·¾¶  
+      proxy_store on;  
+      proxy_store_access user:rw group:rw all:rw;  
+      proxy_temp_path     /home/images/;#Í¼Æ¬·ÃÎÊÂ·¾¶  
+      proxy_redirect     off;  
+      proxy_set_header    Host 127.0.0.1;  
+      client_max_body_size  10m;  
+      client_body_buffer_size 1280k;  
+      proxy_connect_timeout  900;  
+      proxy_send_timeout   900;  
+      proxy_read_timeout   900;  
+      proxy_buffer_size    40k;  
+      proxy_buffers      40 320k;  
+      proxy_busy_buffers_size 640k;  
+      proxy_temp_file_write_size 640k;  
+      if ( !-e $request_filename)  
+      {  
+         proxy_pass http://127.0.0.1;#Ä¬ÈÏ80¶Ë¿Ú  
+      }  
+  }   
+   
+    location / {  
+      root  /home/html; #html·ÃÎÊÂ·¾¶ 
+      index index.html index2.htm; #htmlÎÄ¼þÃû³Æ 
+  
+    } 
+   
+    error_page 404       /404.html; </span>
